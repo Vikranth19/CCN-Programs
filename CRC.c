@@ -1,79 +1,81 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include<string.h>
+#include <string.h>
 
-char * xor1(char a[], char b[])
-{
+ void main() {
+	int i,j,k_len,msg_len,rmsg_len;
+	char input[100]= "100100"; 
+	char key[30] = "1101";
+	char temp[30],quot[100],rem[30],key1[30];
+	k_len=strlen(key);
+	msg_len=strlen(input);
+	strcpy(key1,key);
+	
+	//append k_len-1 zeros to the input msg
+	for (i=0;i<k_len-1;i++) {
+		input[msg_len+i]='0';
+	}
+	for (i=0;i<k_len;i++)temp[i]=input[i];
+	
+	for (i=0;i<msg_len;i++) {
+		quot[i]=temp[0];
+		if(quot[i]=='0')for(j=0;j<k_len;j++)key[j]='0'; 
+		else for (j=0;j<k_len;j++)key[j]=key1[j];
+		for(j=k_len-1;j>0;j--) {
+			if(temp[j]==key[j])rem[j-1]='0'; 
+			else rem[j-1]='1';
+		}
+		rem[k_len-1]=input[i+k_len];
+		strcpy(temp,rem);
+	}
+	strcpy(rem,temp);
+	
+	printf("\nkey is: ");
+	 for(i=0;i<k_len;i++)
+	 printf("%c",key[i]);
+	printf("\nQuotient is ");
+	for (i=0;i<msg_len;i++) printf("%c",quot[i]);
+	printf("\nRemainder is ");
+	for (i=0;i<k_len-1;i++) printf("%c",rem[i]);
+	printf("\nFinal data is: ");
+	for (i=0;i<msg_len;i++)
+	 printf("%c",input[i]);
+	for (i=0;i<k_len-1;i++)
+	 printf("%c",rem[i]);
+	
+	printf("\n");
+	 
+	 char recieved[100] = "100100001";
+	 int flag=0;
+	 char r_temp[30],r_quo[100],r_rem[30];
 
-    char result[100];
-    int j=0;
-    for(int i=1; i<strlen(b);i++)
-    {
-        if (a[i] == b[i])
-            result[j]='0';
-        else
-            result[j]='1';
-        j++;
-    }
-    return result;
-}
+	 for (i=0;i<k_len;i++)r_temp[i]=recieved[i];
 
-// // Performs Modulo-2 division
-char* mod2div(char* divident,char* divisor)
-{
-    int len = strlen(divisor); // ex: 4 if 1101
-    int n = strlen(divident);
-
-    //first len characters of divident
-    char temp[100];
-    for(int i=0;i<len;i++)temp[i]=divident[i];
-
-    while (len<n)
-    {
-        if (temp[0] == '1')
-            temp = strncat(xor1(divisor,temp), divident[len]);
-        else{
-            char all_zero[100];
-            for(int j=0;j<len;j++)all_zero[j]='0';
-            temp = strncat(xor1(all_zero ,temp), divident[len]);
-        }
-        len += 1;
-    }
-    if (temp[0] == '1')
-        temp = xor1(divisor, temp);
-    else{
-        char all_zero[100];
-        for(int j=0;j<len;j++)all_zero[j]='0';
-        tmp = strncat(xor1(all_zero ,temp),divident[len]);
-    }
-    return temp;
-}
-
-
-void encodeData(char *data,char *key)
-{
-    char appended_data[100];
-    strcpy(appended_data,data);
-    for(int i=strlen(data);i<strlen(data)+strlen(key);i++){
-        appended_data[i]='0';
-    }
-
-    char* remainder = mod2div(appended_data,key);
-
-    string codeword = data + remainder;
-    cout << "Remainder : "
-         << remainder << "\n";
-    cout << "Encoded Data (Data + Remainder) :"
-         << codeword << "\n";
-}
-
-// Driver code
-int main()
-{
-    char data[] = "100100";
-    char key[] = "1101";
-
-    encodeData(data,key);
-
-    return 0;
+	 for (i=0;i<msg_len;i++) {
+		r_quo[i]=r_temp[0];
+		if(r_quo[i]=='0')for(j=0;j<k_len;j++)key[j]='0'; 
+		else for (j=0;j<k_len;j++)key[j]=key1[j];
+		for(j=k_len-1;j>0;j--) {
+			if(r_temp[j]==key[j])r_rem[j-1]='0'; 
+			else r_rem[j-1]='1';
+		}
+		r_rem[k_len-1]=recieved[i+k_len];
+		for(int j=0;j< strlen(r_rem);j++)
+	    printf("%c",r_rem[j]);
+	    printf("\n");
+		strcpy(r_temp,r_rem);
+	}
+	strcpy(r_rem,r_temp);
+	printf("\nremainder is: ");
+	for(i=0;i< strlen(r_rem);i++)
+	 printf("%c",r_rem[i]);
+	 
+	for(i=0;i<strlen(r_rem);i++){
+	    if(r_rem[i]!='0'){
+	        flag=1;break;
+	    }
+	}
+	if(flag==0)printf("\nThere is no error present");
+	else{
+	    printf("\nthe recieved codeword contains error");
+	}
 }
